@@ -15,6 +15,7 @@ class SettingsPresenter
     password
     third_party_analytics
     advanced
+    integrations
   ).freeze
 
   private_constant :ALL_PAGES
@@ -27,7 +28,7 @@ class SettingsPresenter
   def pages
     @_pages ||= ALL_PAGES.select do |page|
       case page
-      when "main", "payments", "password", "third_party_analytics", "advanced"
+      when "main", "payments", "password", "third_party_analytics", "advanced", "integrations"
         Pundit.policy!(pundit_user, [:settings, page.to_sym, seller]).show?
       when "profile"
         Pundit.policy!(pundit_user, [:settings, page.to_sym]).show?
@@ -76,7 +77,9 @@ class SettingsPresenter
         show_nsfw_products: seller.show_nsfw_products?,
         disable_affiliate_requests: seller.disable_affiliate_requests?,
         seller_refund_policy:,
-        product_level_support_emails: seller.product_level_support_emails_enabled? ? seller.product_level_support_emails : nil
+        product_level_support_emails: seller.product_level_support_emails_enabled? ? seller.product_level_support_emails : nil,
+        github_connected: seller.github_user_id.present?,
+        github_username: seller.github_username
       }
     }
   end
@@ -131,7 +134,14 @@ class SettingsPresenter
     }
   end
 
-  def third_party_analytics_props
+  def integrations_props
+    github_integration = seller.integrations.by_name("github").first
+    {
+      settings_pages: pages,
+      github_connected: github_integration.present?,
+      github_organization: github_integration&.organization_name
+    }
+  end
     {
       disable_third_party_analytics: seller.disable_third_party_analytics,
       google_analytics_id: seller.google_analytics_id || "",
@@ -396,7 +406,13 @@ class SettingsPresenter
       }
     end
 
-    def fee_info(user_compliance_info)
+    def integrations_props
+    {
+      settings_pages: pages,
+      github_connected: seller.github_integration.present?,
+      github_organization: seller.github_integration&.organization
+    }
+  end
       processor_fee_percent = (Purchase::PROCESSOR_FEE_PER_THOUSAND / 10.0).round(1)
       processor_fee_percent = processor_fee_percent.to_i == processor_fee_percent ? processor_fee_percent.to_i : processor_fee_percent
       processor_fee_fixed_cents = Purchase::PROCESSOR_FIXED_FEE_CENTS

@@ -3,6 +3,7 @@
 require "omniauth-facebook"
 require "omniauth-twitter"
 require "omniauth-google-oauth2"
+require "omniauth-github"
 
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
@@ -291,6 +292,11 @@ Devise.setup do |config|
                   GOOGLE_CLIENT_ID,
                   GOOGLE_CLIENT_SECRET,
                   scope: "email,profile"
+
+  config.omniauth :github,
+                  GITHUB_CLIENT_ID,
+                  GITHUB_CLIENT_SECRET,
+                  scope: "user:email"
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

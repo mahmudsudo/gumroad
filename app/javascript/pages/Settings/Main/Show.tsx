@@ -18,6 +18,7 @@ import { TagInput } from "$app/components/TagInput";
 import { Toggle } from "$app/components/Toggle";
 import { Pill } from "$app/components/ui/Pill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
+import ConnectionAlert from "$app/components/ConnectionAlert";
 
 type ProductLevelSupportEmail = {
   email: string;
@@ -64,6 +65,8 @@ type MainPageProps = {
       fine_print: string | null;
     };
     product_level_support_emails: ProductLevelSupportEmail[] | null;
+    github_connected: boolean;
+    github_username: string | null;
   };
 };
 
@@ -146,6 +149,34 @@ export default function MainPage() {
                 )}
               </small>
             ) : null}
+          </fieldset>
+        </section>
+        <section className="p-4! md:p-8!">
+          <header>
+            <h2>GitHub</h2>
+          </header>
+          <fieldset>
+            {props.user.github_connected ? (
+              <div>
+                <p>Connected as {props.user.github_username}</p>
+                <Button
+                  onClick={() => {
+                    // TODO: Implement disconnect
+                  }}
+                  color="secondary"
+                >
+                  Disconnect GitHub
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <ConnectionAlert
+                  message="Connect your GitHub account to enable PR tracking in invoices."
+                  actionUrl="/users/auth/github"
+                  actionText="Connect GitHub"
+                />
+              </div>
+            )}
           </fieldset>
         </section>
         <section className="p-4! md:p-8!">

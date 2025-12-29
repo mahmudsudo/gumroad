@@ -73,6 +73,36 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
   end
 
+  # Log in user through GitHub OAuth
+  def github
+    @user = User.find_or_create_for_github_oauth!(request.env["omniauth.auth"])
+    if @user.persisted?
+      if @user.is_team_member?
+        flash[:alert] = "You're an admin, you can't login with GitHub."
+        redirect_to login_path
+      elsif @user.deleted?
+        flash[:alert] = "You cannot log in because your account was permanently deleted. Please sign up for a new account to start selling!"
+        redirect_to login_path
+      elsif @user.email.present?
+        sign_in_or_prepare_for_two_factor_auth(@user)
+        safe_redirect_to two_factor_authentication_path(next: post_auth_redirect(@user))
+      else
+        sign_in @user
+
+        if @user.unconfirmed_email.present?
+          flash[:warning] = "Please confirm your email address"
+        else
+          create_user_event("signup")
+          flash[:warning] = "Please enter an email address!"
+        end
+        safe_redirect_to settings_main_path
+      end
+    else
+      flash[:alert] = "Sorry, something went wrong. Please try again."
+      redirect_to signup_path
+    end
+  end
+
   def stripe_connect
     auth = request.env["omniauth.auth"]
     referer = request.env["omniauth.params"]["referer"]

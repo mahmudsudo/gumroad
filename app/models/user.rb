@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_paper_trail
   has_one_time_password
   include Flipper::Identifier, FlagShihTzu, CurrencyHelper, Mongoable, JsonData, Deletable, MoneyBalance,
-          DeviseInternal, PayoutSchedule, SocialFacebook, SocialTwitter, SocialGoogle, SocialApple, SocialGoogleMobile,
+          DeviseInternal, PayoutSchedule, SocialFacebook, SocialTwitter, SocialGoogle, SocialApple, SocialGoogleMobile, SocialGithub,
           StripeConnect, Stats, PaymentStats, FeatureStatus, Risk, Compliance, Validations, Taxation, PingNotification,
           AsyncDeviseNotification, Posts, AffiliatedProducts, Followers, LowBalanceFraudCheck, MailerLevel,
           DirectAffiliates, AsJson, Tier, Recommendations, Team, AustralianBacktaxes, WithCdnUrl,
@@ -58,6 +58,9 @@ class User < ApplicationRecord
   has_many :purchases, foreign_key: :purchaser_id
   has_many :purchased_products, -> { distinct }, through: :purchases, class_name: "Link", source: :link
   has_many :sales, class_name: "Purchase", foreign_key: :seller_id
+
+  has_many :created_invoices, class_name: "Invoice", foreign_key: :creator_id
+  has_many :received_invoices, class_name: "Invoice", foreign_key: :contractor_id
   has_many :preorders_bought, class_name: "Preorder", foreign_key: :purchaser_id
   has_many :preorders_sold, class_name: "Preorder", foreign_key: :seller_id
 

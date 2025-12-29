@@ -9,8 +9,9 @@ class Integration < ApplicationRecord
   DISCORD = "discord"
   ZOOM = "zoom"
   GOOGLE_CALENDAR = "google_calendar"
+  GITHUB = "github"
 
-  ALL_NAMES = [CIRCLE, DISCORD, ZOOM, GOOGLE_CALENDAR]
+  ALL_NAMES = [CIRCLE, DISCORD, ZOOM, GOOGLE_CALENDAR, GITHUB]
 
   has_one :product_integration, dependent: :destroy
   scope :by_name, -> (name) { where(type: Integration.type_for(name)) }
@@ -42,6 +43,8 @@ class Integration < ApplicationRecord
       ZoomIntegration
     when GOOGLE_CALENDAR
       GoogleCalendarIntegration
+    when GITHUB
+      GithubIntegration
     end
   end
 

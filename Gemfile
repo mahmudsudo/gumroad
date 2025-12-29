@@ -133,6 +133,7 @@ gem "omniauth-rails_csrf_protection", "~> 1.0"
 # Update to a normal release once https://github.com/isaacsanders/omniauth-stripe-connect/issues/67 is fixed
 gem "omniauth-stripe-connect", github: "isaacsanders/omniauth-stripe-connect", ref: "468dd9acaccdbba38a38cdbcdf7f10c17be25e89"
 gem "omniauth-twitter", "~> 1.4"
+gem "omniauth-github", "~> 2.0"
 gem "paper_trail", "~> 15.0"
 gem "paypal-sdk-merchant", "~> 1.117"
 gem "paypal-checkout-sdk", "~> 1.0"

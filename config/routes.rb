@@ -438,6 +438,7 @@ Rails.application.routes.draw do
       resource :profile, only: %i[show update], controller: "profile"
       resource :third_party_analytics, only: %i[show update], controller: "third_party_analytics"
       resource :advanced, only: %i[show update], controller: "advanced"
+      resource :integrations, only: :show
       resources :authorized_applications, only: :index
       resource :payments, only: %i[show update] do
         resource :verify_document, only: :create, controller: "payments/verify_document"
@@ -519,6 +520,11 @@ Rails.application.routes.draw do
       resource :dispute_evidence, controller: "purchases/dispute_evidence", only: %i[show update]
     end
 
+    # invoices
+    resources :invoices do
+      resources :invoice_line_items, only: [:create, :update, :destroy]
+    end
+
     resources :orders, only: [:create] do
       member do
         post :confirm
@@ -581,6 +587,8 @@ Rails.application.routes.draw do
     get "/purchases/search", to: "purchases#search"
 
     resources :checkout, only: [:index]
+
+    resources :invoices, only: [:index, :new, :create, :show, :edit, :update]
 
     resources :licenses, only: [:update]
 
@@ -902,6 +910,7 @@ Rails.application.routes.draw do
     # React Router routes
     scope module: :api, defaults: { format: :json } do
       namespace :internal do
+        get "/github/pr-info", to: "github#pr_info"
         resources :affiliates, only: [:index, :show, :create, :update, :destroy] do
           collection do
             get :onboarding
